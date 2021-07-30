@@ -175,6 +175,7 @@ UNLOCK TABLES;
 --
 
 -- comments
+UPDATE comments SET user_id = CEIL(RAND() * 100);
 UPDATE comments_to_announcements SET comment_id = CEIL(RAND() * 500);
 UPDATE comments_to_announcements SET announcement_id = CEIL(RAND() * 100);
 UPDATE comments_to_forums SET comment_id = CEIL(500 + RAND() * 500);

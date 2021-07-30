@@ -3,6 +3,8 @@
  *  - Что читает пользователь под id = ?
  * 	- Топ 10 читателей по уровню и рангу
  *  - Самая популярная манга
+ *  - Самый активный пользователь
+ *  - Какую(-ие) мангу(-и) перводит группа id = ?
  *  - Процедура по заполнению временной таблицы, содержащей:
  * 		> название манги
  *  	> часть
@@ -58,7 +60,7 @@ JOIN mangas m ON l.manga_id = m.id;
 
 -- Что читает пользователь под id = ? (если не показывает, значит пользователь не читает мангу, 
 -- 									   или просто не сохраняет её в библиотеке, попробуйте другой id)
-SET @id = 4;
+SET @user_id = 4;
 
 SELECT 
     user_id,
@@ -77,7 +79,7 @@ FROM
 JOIN
     mangas_libraries 
 USING (library_id)
-WHERE user_id = @id;
+WHERE user_id = @user_id;
 
 
 
@@ -101,6 +103,47 @@ FROM
 GROUP BY en_title
 ORDER BY popularity DESC
 LIMIT 1;
+
+
+
+
+-- Самый активный пользователь
+SELECT 
+	nickname , 
+    COUNT(c.user_id) AS freq 
+FROM 
+	users u 
+JOIN 
+	comments c 
+ON 
+	u.id = c.user_id 
+GROUP BY u.id 
+ORDER BY freq DESC 
+LIMIT 1;
+
+
+
+-- Какую(-ие) мангу(-и) перводит группа id = ?
+SET @translators_id = 1;
+
+SELECT
+	tp.nickname AS translators,
+    m.release_year,
+	m.en_title,
+    m.genres
+FROM
+	mangas_translators mt
+JOIN
+	mangas m
+ON 
+	mt.manga_id = m.id
+JOIN
+	translators_profiles tp
+ON
+	mt.translators_id = tp.id
+WHERE
+	tp.id = @translators_id
+ORDER BY translators, release_year;
 
 
 
